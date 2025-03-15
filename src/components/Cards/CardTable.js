@@ -1,9 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-
+import { getAllUsers , deleteUserById } from "../../services/ApiUser";
 // components
 
 export default function CardTable({ color }) {
+  const [users, setUsers] = useState([]);
+
+  const getUsers = async () => {
+    try {
+      await getAllUsers().then((res) => {
+        setUsers(res.data.userList);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteUser = async (id) => {
+    try {
+      await deleteUserById(id)
+      getUsers()
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
   return (
     <>
       <div
@@ -23,6 +48,13 @@ export default function CardTable({ color }) {
               >
                 List Users
               </h3>
+              <button
+                onClick={() => {
+                  getUsers();
+                }}
+              >
+                Gett Users
+              </button>
             </div>
           </div>
         </div>
@@ -82,6 +114,7 @@ export default function CardTable({ color }) {
               </tr>
             </thead>
             <tbody>
+              {users.map((user,index)=>(
               <tr>
                 <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
                   <img
@@ -95,28 +128,31 @@ export default function CardTable({ color }) {
                       +(color === "light" ? "text-blueGray-600" : "text-white")
                     }
                   >
-                    FirstName
+                    {user.firstName}
                   </span>
                 </th>
                 <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                  LastName
+                {user.lastName}
                 </td>
                 <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                  Email
+                {user.email}
                 </td>
                 <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                  2025
+                {user.createdAt}
+
                 </td>
                 <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right">
                   <button
                     className="bg-lightBlue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
-                    style={{  color: '#4a5568' }} 
+                    style={{ color: "#4a5568" }}
+                    onClick={()=>{deleteUser(user._id)}}
                   >
                     Delete
-                  </button>{" "}
+                  </button>
                 </td>
               </tr>
+            ))}
             </tbody>
           </table>
         </div>
