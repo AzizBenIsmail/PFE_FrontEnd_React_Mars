@@ -3,6 +3,9 @@ import React from "react";
 import UserDropdown from "components/Dropdowns/UserDropdown.js";
 
 export default function Navbar() {
+  const user = JSON.parse(localStorage.getItem("user"));
+console.log("Utilisateur récupéré :", user);
+
   return (
     <>
       {/* Navbar */}
@@ -14,7 +17,7 @@ export default function Navbar() {
             href="#pablo"
             onClick={(e) => e.preventDefault()}
           >
-            Dashboard
+            Dashboard {user.email}
           </a>
           {/* Form */}
           <form className="md:flex hidden flex-row flex-wrap items-center lg:ml-auto mr-3">
@@ -31,7 +34,7 @@ export default function Navbar() {
           </form>
           {/* User */}
           <ul className="flex-col md:flex-row list-none items-center hidden md:flex">
-            <UserDropdown />
+            <UserDropdown  user={user}/>
           </ul>
         </div>
       </nav>

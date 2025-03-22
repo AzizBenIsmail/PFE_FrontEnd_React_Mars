@@ -1,7 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { addUser } from "../../services/ApiUser";
+import { useHistory } from "react-router-dom";
 
 export default function Register() {
+  const history = useHistory();
+  const [role,setRole] = useState("student")
+  const [newAccount, setNewAccount] = useState({
+    firstName: "",
+    email: "",
+    password: "",
+  });
+
+  const handelChange = (e) => {
+    const { name, value } = e.target;
+    setNewAccount({ ...newAccount, [name]: value });
+  };
+
+  const addData = async () => {
+    try {
+      await addUser(newAccount).then(() => {
+        history.push("/auth/login");
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <div className="container mx-auto px-4 h-full">
@@ -11,32 +35,20 @@ export default function Register() {
               <div className="rounded-t mb-0 px-6 py-6">
                 <div className="text-center mb-3">
                   <h6 className="text-blueGray-500 text-sm font-bold">
-                    Sign up with
+                    Sign up with                     {role === "trainer" ?(<div>student</div>):(<div>Trainer</div>) }
+
                   </h6>
                 </div>
                 <div className="btn-wrapper text-center">
                   <button
                     className="bg-white active:bg-blueGray-50 text-blueGray-700 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-2 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs ease-linear transition-all duration-150"
                     type="button"
+                    onClick={()=>{setRole("trainer")}}
                   >
-                    <img
-                      alt="..."
-                      className="w-5 mr-1"
-                      src={require("assets/img/github.svg").default}
-                    />
-                    Github
+                    {role === "trainer" ?(<div>student</div>):(<div>Trainer</div>) }
+                    
                   </button>
-                  <button
-                    className="bg-white active:bg-blueGray-50 text-blueGray-700 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-1 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    <img
-                      alt="..."
-                      className="w-5 mr-1"
-                      src={require("assets/img/google.svg").default}
-                    />
-                    Google
-                  </button>
+                 
                 </div>
                 <hr className="mt-6 border-b-1 border-blueGray-300" />
               </div>
@@ -50,15 +62,33 @@ export default function Register() {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      Name
+                      firstName
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Name"
+                      name="firstName"
+                      onChange={handelChange}
+                    />
+                  </div>  
+                  {role === "trainer" &&(
+                  <div className="relative w-full mb-3">
+                    <label
+                      className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                      htmlFor="grid-password"
+                    >
+                      Cv
+                    </label>
+                    <input
+                      type="file"
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                      placeholder="Name"
+                      name="firstName"
+                      onChange={handelChange}
                     />
                   </div>
-
+)}
                   <div className="relative w-full mb-3">
                     <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -70,6 +100,8 @@ export default function Register() {
                       type="email"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Email"
+                      name="email"
+                      onChange={handelChange}
                     />
                   </div>
 
@@ -84,6 +116,8 @@ export default function Register() {
                       type="password"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Password"
+                      name="password"
+                      onChange={handelChange}
                     />
                   </div>
 
@@ -111,6 +145,9 @@ export default function Register() {
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"
+                      onClick={() => {
+                        addData(newAccount);
+                      }}
                     >
                       Create Account
                     </button>
@@ -120,10 +157,7 @@ export default function Register() {
             </div>
             <div className="flex flex-wrap mt-6 relative">
               <div className="w-1/2">
-                <Link
-                  to="/auth/login"
-                  className="text-blueGray-200"
-                >
+                <Link to="/auth/login" className="text-blueGray-200">
                   <small>Login</small>
                 </Link>
               </div>

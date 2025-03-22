@@ -1,8 +1,37 @@
-import React from "react";
+import React , { useState }from "react";
 import { Link } from "react-router-dom";
 import { IoIosMail } from "react-icons/io";
+import {login} from "../../services/ApiUser"
+import { useHistory } from "react-router-dom";
 
 export default function Login() {
+    const history = useHistory();
+  const [newAccount , setNewAccount] = useState({
+    email :"",password:""
+  })
+
+  const handleChange = (e) => {
+    const { name , value } = e.target;
+    setNewAccount({...newAccount , [name]: value})
+  }
+
+  const login2 = async () => {
+    try {
+      const res = await login(newAccount);
+      console.log("res", res);  // S'assurer que res est bien défini
+      localStorage.setItem("user", JSON.stringify(res.data.user)); // Sauvegarde les infos dans localStorage
+
+      if(res.data.user.role === "client"){
+        history.push("/landing");
+      }else{
+        history.push("/admin/tables");
+      }
+    } catch (error) {
+      console.error("Erreur de connexion :", error);
+    }
+  };
+  
+
   return (
     <>
       <div className="container mx-auto px-4 h-full">
@@ -24,6 +53,8 @@ export default function Login() {
                         type="email"
                         className="border-0 px-3 py-2 placeholder-blueGray-300 text-blueGray-600 bg-white text-sm focus:outline-none focus:ring w-full"
                         placeholder="Email"
+                        name="email"
+                        onChange={handleChange}
                       />
                     </div>
                   </div>
@@ -39,6 +70,9 @@ export default function Login() {
                       type="password"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       placeholder="Password"
+                      name="password"
+                      onChange={handleChange}
+
                     />
                   </div>
                   <div>
@@ -58,6 +92,7 @@ export default function Login() {
                     <button
                       className="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                       type="button"
+                      onClick={()=>{login2(newAccount)}}
                     >
                       Sign In
                     </button>
